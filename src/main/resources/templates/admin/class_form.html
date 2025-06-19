@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="${classSession.id != null} ? 'Editar Clase' : 'Crear Nueva Clase'">Formulario Clase</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container">
+    <a th:href="@{/admin/classes}" class="navbar-brand">Moon Gym Admin</a>
+    <ul class="navbar-nav ms-auto">
+      <li class="nav-item">
+        <a th:href="@{/logout}" class="nav-link">Cerrar Sesión</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<div class="container my-5">
+  <h2 th:text="${classSession.id != null} ? 'Editar Clase' : 'Crear Nueva Clase'">Formulario Clase</h2>
+
+  <form th:action="${classSession.id != null} ? @{/admin/classes/{id}(id=${classSession.id})} : @{/admin/classes}"
+        th:object="${classSession}" method="post">
+    <div class="mb-3">
+      <label for="name" class="form-label">Nombre</label>
+      <input type="text" id="name" th:field="*{name}" class="form-control" placeholder="Nombre de la clase" required />
+      <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-danger small"></div>
+    </div>
+
+    <div class="mb-3">
+      <label for="description" class="form-label">Descripción</label>
+      <textarea id="description" th:field="*{description}" class="form-control" rows="3" placeholder="Descripción breve"></textarea>
+    </div>
+
+    <div class="mb-3">
+      <label for="dateTime" class="form-label">Fecha y Hora</label>
+      <input type="datetime-local" id="dateTime" th:field="*{dateTime}" class="form-control" required />
+      <div th:if="${#fields.hasErrors('dateTime')}" th:errors="*{dateTime}" class="text-danger small"></div>
+    </div>
+
+    <div class="mb-3">
+      <label for="capacity" class="form-label">Capacidad</label>
+      <input type="number" id="capacity" th:field="*{capacity}" class="form-control" min="1" placeholder="Número máximo de usuarios" required />
+      <div th:if="${#fields.hasErrors('capacity')}" th:errors="*{capacity}" class="text-danger small"></div>
+    </div>
+
+    <div class="mb-3">
+      <label for="intensityLevel" class="form-label">Intensidad</label>
+      <select id="intensityLevel" th:field="*{intensityLevel}" class="form-select">
+        <option th:each="i : ${#numbers.sequence(1,5)}" th:value="${i}" th:text="${i}"></option>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label for="imageUrl" class="form-label">Ruta de Imagen</label>
+      <input type="text" id="imageUrl" th:field="*{imageUrl}" class="form-control" placeholder="/images/ejemplo.jpg" />
+      <div th:if="${#fields.hasErrors('imageUrl')}" th:errors="*{imageUrl}" class="text-danger small"></div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Guardar</button>
+    <a th:href="@{/admin/classes}" class="btn btn-secondary ms-2">Cancelar</a>
+  </form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
