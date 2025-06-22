@@ -12,24 +12,19 @@ import java.util.List;
 @Repository
 public interface IClassSessionRepository extends JpaRepository<ClassSession, Long> {
 
-    /**
-     * Obtiene las tres próximas clases ordenadas por fecha ascendente.
-     */
     List<ClassSession> findTop3ByOrderByDateTimeAsc();
 
-    /**
-     * Busca clases dentro de un rango de fecha y hora.
-     * @param start inicio del rango (inclusive)
-     * @param end fin del rango (inclusive)
-     */
     List<ClassSession> findByDateTimeBetween(LocalDateTime start, LocalDateTime end);
 
     List<ClassSession> findByRecurringWeekdaysTrueAndDateTimeBefore(LocalDateTime localDateTime);
 
     boolean existsByNameAndDateTime(String name, LocalDateTime newDateTime);
+
     @Query("SELECT DISTINCT cs.name FROM ClassSession cs")
     List<String> findDistinctNames();
+
     List<ClassSession> findByNameAndDateTimeBetween(String name, LocalDateTime from, LocalDateTime to);
+
     @Query("""
       SELECT cs
         FROM ClassSession cs
@@ -43,4 +38,10 @@ public interface IClassSessionRepository extends JpaRepository<ClassSession, Lon
             @Param("start") LocalDateTime start,
             @Param("end")   LocalDateTime end
     );
+
+    List<ClassSession> findByName(String className);
+
+    List<ClassSession> findByNameAndRecurringWeekdaysTrue(String className);
+
+
 }

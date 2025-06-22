@@ -3,29 +3,107 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout}">
 <head>
-  <title layout:fragment="title"
-         th:text="'Horarios – ' + ${className}">Horarios</title>
+  <title layout:fragment="title">Horarios – Moon Gym</title>
 </head>
 <body>
+
 <section layout:fragment="content" class="container py-5">
-  <h1 class="mb-4" th:text="'Horarios de ' + ${className}">Horarios</h1>
-  <div class="row">
-    <div class="col-md-2" th:each="day : ${days}">
-      <h5 th:text="${#dates.format(day, 'EEEE')}">Lunes</h5>
-      <ul class="list-unstyled">
-        <li th:each="sess : ${sessionsByDay[day]}">
-          <span th:text="${#temporals.format(sess.dateTime,'HH:mm')}">10:00</span>
-          <a th:href="@{/reservas/new(sessionId=${sess.id})}"
-             class="btn btn-sm btn-outline-primary ms-2">
-            Reservar
-          </a>
-        </li>
-        <li th:if="${sessionsByDay[day] == null}">
-          — Sin sesiones —
-        </li>
-      </ul>
+
+  <!-- CSS para ribbon y escala de grises -->
+  <style>
+    .card-img-wrapper { position: relative; }
+    .ribbon {
+      width: 100px; height: 100px; overflow: hidden;
+      position: absolute; top: -10px; right: -10px;
+    }
+    .ribbon span {
+      position: absolute; display: block;
+      width: 140px; padding: 5px 0;
+      background: rgba(0,0,0,0.8); color: white;
+      text-align: center; transform: rotate(45deg);
+      top: 25px; right: -40px;
+      font-size: 0.75rem;
+    }
+    .grayscale img { filter: grayscale(100%); }
+  </style>
+
+  <h1 class="mb-4">
+    Reservar “<span th:text="${className}">Clase</span>”
+  </h1>
+
+  <!-- Recorro solo los días desde hoy hasta viernes -->
+  <div th:each="day : ${days}"
+       th:if="${day.getValue() >= T(java.time.LocalDate).now().getDayOfWeek().getValue()}">
+
+    <!-- Header con día y fecha -->
+    <h2 class="h4 mt-5 mb-3"
+        th:text="|${day.getDisplayName(T(java.time.format.TextStyle).FULL,#locale)} ${#temporals.format(T(java.time.LocalDate).now().with(day),'yyyy-MM-dd')}|">
+      Lunes 2025-06-23
+    </h2>
+
+    <div class="row g-3">
+
+      <!-- Tarjeta de cada sesión -->
+      <div class="col-sm-4"
+           th:each="cs : ${sessionsByDay[day]}">
+
+        <div class="card h-100 shadow-sm">
+
+          <!-- Imagen con ribbon y posible escala de grises -->
+          <div class="card-img-wrapper"
+               th:classappend="${cs.dateTime.isBefore(T(java.time.LocalDateTime).now())
+                               or (cs.reservations != null and cs.reservations.size() >= cs.capacity)}
+                              ? ' grayscale' : ''">
+
+            <img th:src="${cs.imageUrl}" class="card-img-top" alt="Imagen clase">
+
+            <div class="ribbon"
+                 th:if="${cs.dateTime.isBefore(T(java.time.LocalDateTime).now())}">
+              <span>Finalizada</span>
+            </div>
+            <div class="ribbon"
+                 th:if="${cs.reservations != null
+                          and cs.reservations.size() >= cs.capacity
+                          and cs.dateTime.isAfter(T(java.time.LocalDateTime).now())}">
+              <span>Completa</span>
+            </div>
+          </div>
+
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title" th:text="${cs.name}">Nombre Clase</h5>
+            <p class="card-text mb-2" th:text="${cs.description}">
+              Descripción…
+            </p>
+
+            <!-- Estado sesión -->
+            <div th:if="${cs.dateTime.isBefore(T(java.time.LocalDateTime).now())}">
+              <span class="badge bg-secondary">Clase Finalizada</span>
+            </div>
+            <div th:if="${cs.reservations != null
+                         and cs.reservations.size() >= cs.capacity
+                         and cs.dateTime.isAfter(T(java.time.LocalDateTime).now())}">
+              <span class="badge bg-danger">Completa</span>
+            </div>
+            <div th:if="${!(cs.dateTime.isBefore(T(java.time.LocalDateTime).now()))
+                          and !(cs.reservations != null and cs.reservations.size() >= cs.capacity)}"
+                 class="mt-auto">
+              <strong>Capacidad:</strong>
+              <span th:text="${cs.capacity}">0</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Si no hay sesiones ese día -->
+      <div class="col-12" th:if="${#lists.isEmpty(sessionsByDay[day])}">
+        <p class="text-muted fst-italic">No hay sesiones este día.</p>
+      </div>
+
     </div>
   </div>
+
 </section>
+
 </body>
 </html>
