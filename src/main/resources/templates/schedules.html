@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+  <title layout:fragment="title"
+         th:text="'Horarios – ' + ${className}">Horarios</title>
+</head>
+<body>
+<section layout:fragment="content" class="container py-5">
+  <h1 class="mb-4" th:text="'Horarios de ' + ${className}">Horarios</h1>
+  <div class="row">
+    <div class="col-md-2" th:each="day : ${days}">
+      <h5 th:text="${#dates.format(day, 'EEEE')}">Lunes</h5>
+      <ul class="list-unstyled">
+        <li th:each="sess : ${sessionsByDay[day]}">
+          <span th:text="${#temporals.format(sess.dateTime,'HH:mm')}">10:00</span>
+          <a th:href="@{/reservas/new(sessionId=${sess.id})}"
+             class="btn btn-sm btn-outline-primary ms-2">
+            Reservar
+          </a>
+        </li>
+        <li th:if="${sessionsByDay[day] == null}">
+          — Sin sesiones —
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+</body>
+</html>

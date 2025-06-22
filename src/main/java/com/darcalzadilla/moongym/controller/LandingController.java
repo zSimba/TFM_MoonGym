@@ -1,5 +1,6 @@
 package com.darcalzadilla.moongym.controller;
 
+import com.darcalzadilla.moongym.dto.ClassExampleDto;
 import com.darcalzadilla.moongym.entity.ClassSession;
 import com.darcalzadilla.moongym.service.ClassSessionService;
 import org.springframework.stereotype.Controller;
@@ -22,10 +23,9 @@ public class LandingController {
      * @return nombre de la plantilla Thymeleaf (landing.html)
      */
     @GetMapping("/")
-    public String showLandingPage(Model model) {
-        // Obtiene tres ejemplos de clases para mostrar en la landing
-        List<ClassSession> classExamples = classSessionService.findTop3();
-        model.addAttribute("classExamples", classExamples);
+    public String landing(Model model) {
+        List<ClassExampleDto> examples = classSessionService.listDistinctClassExamples();
+        model.addAttribute("classExamples", examples);
         return "landing";
     }
 }

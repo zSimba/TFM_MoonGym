@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+  <title layout:fragment="title">Confirmar Reserva</title>
+</head>
+<body>
+<section layout:fragment="content" class="container py-5">
+  <h1 class="mb-4">Confirma tu Reserva</h1>
+  <div class="card mb-4 shadow-sm">
+    <img th:src="@{${session.imageUrl}}"
+         class="card-img-top" style="height:200px;object-fit:cover;"/>
+    <div class="card-body">
+      <h3 th:text="${session.name}">Rumba</h3>
+      <p th:text="${#temporals.format(session.dateTime,'EEEE dd/MM HH:mm')}">
+        Lunes 01/07 10:00
+      </p>
+      <p th:text="${session.description}">...</p>
+      <p>
+        <strong>Plazas libres:</strong>
+        <span th:text="${session.capacity
+               - (session.reservations != null ? session.reservations.size() : 0)}">
+              5
+            </span>
+      </p>
+    </div>
+  </div>
+  <form th:action="@{/reservas/book}" method="post">
+    <input type="hidden" name="sessionId"
+           th:value="${session.id}" />
+    <div class="form-check mb-3">
+      <input class="form-check-input" type="checkbox"
+             id="terms" name="acceptTerms" required/>
+      <label class="form-check-label" for="terms">
+        Acepto los términos y condiciones
+      </label>
+    </div>
+    <button class="btn btn-success">Confirmar Reserva</button>
+    <a th:href="@{/clases}" class="btn btn-secondary ms-2">Volver</a>
+  </form>
+</section>
+</body>
+</html>

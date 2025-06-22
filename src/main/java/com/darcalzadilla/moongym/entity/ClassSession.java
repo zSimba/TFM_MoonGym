@@ -33,6 +33,16 @@ public class ClassSession {
 
     @OneToMany(mappedBy = "classSession", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Reservation> reservations;
+    @Column(name = "recurring_weekdays", nullable = false)
+    private boolean recurringWeekdays;
+
+    public boolean isRecurringWeekdays() {
+        return recurringWeekdays;
+    }
+
+    public void setRecurringWeekdays(boolean recurringWeekdays) {
+        this.recurringWeekdays = recurringWeekdays;
+    }
 
     public int getIntensityLevel() {
         return intensityLevel;
@@ -101,6 +111,11 @@ public class ClassSession {
 
     public void setReservations(List<Reservation> reservations) {
         this.reservations = reservations;
+    }
+    /** Plazas disponibles */
+    @Transient
+    public int getAvailableSeats() {
+        return capacity - reservations.size();
     }
 
 }

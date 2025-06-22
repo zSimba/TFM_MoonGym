@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+  <title layout:fragment="title">Reserva Exitosa</title>
+</head>
+<body>
+<section layout:fragment="content" class="container py-5 text-center">
+  <h1 class="mb-4 text-success">¡Reserva Confirmada!</h1>
+  <p>
+    Has reservado
+    <strong th:text="${reservation.classSession.name}">Rumba</strong>
+    para el
+    <strong th:text="${#temporals.format(reservation.classSession.dateTime,'EEEE dd/MM HH:mm')}">
+      Lunes 01/07 10:00
+    </strong>.
+  </p>
+  <a th:href="@{/reservas}" class="btn btn-primary mt-3">Mis Reservas</a>
+  <a th:href="@{/clases}" class="btn btn-outline-secondary mt-3 ms-2">
+    Volver al Catálogo
+  </a>
+</section>
+</body>
+</html>

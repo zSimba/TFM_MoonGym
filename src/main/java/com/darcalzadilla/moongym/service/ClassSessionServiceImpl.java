@@ -1,5 +1,6 @@
 package com.darcalzadilla.moongym.service;
 
+import com.darcalzadilla.moongym.dto.ClassExampleDto;
 import com.darcalzadilla.moongym.entity.ClassSession;
 import com.darcalzadilla.moongym.repository.IClassSessionRepository;
 import jakarta.transaction.Transactional;
@@ -8,6 +9,8 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ClassSessionServiceImpl implements ClassSessionService {
@@ -64,5 +67,41 @@ public class ClassSessionServiceImpl implements ClassSessionService {
     @Transactional
     public void deleteSession(Long id) {
         repository.deleteById(id);
+    }
+
+    public List<ClassExampleDto> listDistinctClassExamples() {
+        return repository.findAll().stream()
+                .collect(Collectors.groupingBy(ClassSession::getName))
+                .values().stream()
+                .map(sessList -> sessList.get(0))
+                .map(s -> new ClassExampleDto(
+                        s.getName(),
+                        s.getDescription(),
+                        s.getImageUrl(),
+                        s.getIntensityLevel()
+                ))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ClassSession> findByNameAndDateRange(String name, LocalDateTime from, LocalDateTime to) {
+        return repository.findByNameAndDateTimeBetween(name, from, to);
+    }
+
+    @Override
+    public Optional<ClassSession> findById(Long sessionId) {
+        return repository.findById(sessionId);
+    }
+
+    @Override
+    public List<String> findDistinctClassNames() {
+        return repository.findDistinctNames();
+    }
+
+    @Override
+    public List<ClassSession> findSessionsNext7DaysByName(String name) {
+        LocalDateTime now      = LocalDateTime.now();
+        LocalDateTime in7Days  = now.plusDays(7);
+        return repository.findByNameAndDateTimeBetweenOrderByDateTime(name, now, in7Days);
     }
 }
