@@ -27,4 +27,13 @@ public class DashboardController {
 
         return "dashboard";
     }
+    @GetMapping("/terminos")
+    public String terminos() {
+        return "terminos";
+    }
+
+    @GetMapping("/politica-privacidad")
+    public String politicaPrivacidad() {
+        return "politica-privacidad";
+    }
 }
