@@ -1,7 +1,6 @@
 package com.darcalzadilla.moongym.controller;
 
 import com.darcalzadilla.moongym.dto.ClassExampleDto;
-import com.darcalzadilla.moongym.entity.ClassSession;
 import com.darcalzadilla.moongym.service.ClassSessionService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,11 +16,6 @@ public class LandingController {
         this.classSessionService = classSessionService;
     }
 
-    /**
-     * Muestra la landing page pública antes de iniciar sesión.
-     * @param model Modelo para Thymeleaf
-     * @return nombre de la plantilla Thymeleaf (landing.html)
-     */
     @GetMapping("/")
     public String landing(Model model) {
         List<ClassExampleDto> examples = classSessionService.listDistinctClassExamples();

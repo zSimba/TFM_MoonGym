@@ -10,17 +10,6 @@ import java.util.Optional;
 public interface ClassSessionService {
     List<ClassSession> findTop3();
 
-    /**
-     * Obtiene las sesiones programadas para hoy.
-     */
-    List<ClassSession> findTodaySessions();
-
-    /**
-     * Obtiene sesiones recomendadas para un usuario (lógica de negocio simple).
-     */
-    List<ClassSession> findRecommendedSessions(String username);
-
-    /** Método CRUD adicional si lo necesitas */
     ClassSession getSessionById(Long id);
 
     List<ClassSession> listAllSessions();

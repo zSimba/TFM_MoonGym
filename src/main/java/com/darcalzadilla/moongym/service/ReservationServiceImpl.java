@@ -67,15 +67,6 @@ public class ReservationServiceImpl implements IReservationService{
 
         reservationRepo.delete(res);
     }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<Reservation> listUserReservations(String username) {
-        User user = userRepo.findByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado: " + username));
-        return reservationRepo.findByUser(user);
-    }
-
     @Override
     public List<Reservation> findByUser(String name) {
         return reservationRepo.findAll();

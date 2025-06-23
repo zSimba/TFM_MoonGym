@@ -12,9 +12,8 @@
 
   <div class="card mb-4">
     <div class="row g-0">
-      <!-- Si quieres mostrar imagen: -->
-      <div class="col-md-4" th:if="${session.imageUrl}">
-        <img th:src="${session.imageUrl}"
+      <div class="col-md-4" th:if="${classSession.imageUrl}">
+        <img th:src="${classSession.imageUrl}"
              class="img-fluid rounded-start"
              alt="Imagen de la clase">
       </div>
@@ -22,20 +21,24 @@
         <div class="card-body">
           <p>
             <strong>Fecha y hora:</strong>
-            <span th:text="${#temporals.format(session.dateTime,'EEEE dd MMMM yyyy HH:mm',#locale)}">
+            <span th:text="${#temporals.format(classSession.dateTime,'EEEE dd MMMM yyyy HH:mm',#locale)}">
               Lunes 23 junio 2025 10:00
             </span>
           </p>
           <p>
             <strong>Descripción:</strong>
-            <span th:text="${session.description}">Rodaremos al ritmo de la música…</span>
+            <span th:text="${classSession.description}">
+              Rodaremos al ritmo de la música…
+            </span>
           </p>
           <p>
             <strong>Capacidad:</strong>
             <span th:text="${
-                (session.reservations != null ? session.reservations.size() : 0)
-                + ' / ' + session.capacity
-            }">0 / 10</span>
+                (classSession.reservations != null ? classSession.reservations.size() : 0)
+                + ' / ' + classSession.capacity
+            }">
+              0 / 10
+            </span>
           </p>
         </div>
       </div>
@@ -43,14 +46,10 @@
   </div>
 
   <form th:action="@{/reservas/book}" method="post">
-    <input type="hidden" name="sessionId" th:value="${session.id}"/>
+    <input type="hidden" name="sessionId" th:value="${classSession.id}"/>
 
-    <button type="submit" class="btn btn-primary">
-      Confirmar Reserva
-    </button>
-    <a th:href="@{/clases}" class="btn btn-secondary ms-2">
-      Volver
-    </a>
+    <button type="submit" class="btn btn-primary">Confirmar Reserva</button>
+    <a th:href="@{/clases}" class="btn btn-secondary ms-2">Volver</a>
   </form>
 
 </section>

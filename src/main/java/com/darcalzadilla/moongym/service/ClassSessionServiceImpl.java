@@ -27,20 +27,6 @@ public class ClassSessionServiceImpl implements ClassSessionService {
     }
 
     @Override
-    public List<ClassSession> findTodaySessions() {
-        LocalDate today = LocalDate.now();
-        LocalDateTime start = today.atStartOfDay();
-        LocalDateTime end = today.atTime(23, 59, 59);
-        return repository.findByDateTimeBetween(start, end);
-    }
-
-    @Override
-    public List<ClassSession> findRecommendedSessions(String username) {
-        // Lógica de recomendación simple: mostrar próximas 3 sesiones
-        return findTop3();
-    }
-
-    @Override
     public ClassSession getSessionById(Long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Clase no encontrada: " + id));

@@ -33,9 +33,7 @@ public class ClassSessionController {
         this.weeklyGenerator = weeklyGenerator;
     }
 
-    /**
-     * Catálogo de modalidades: un solo cuadro por cada nombre de clase
-     */
+
     @GetMapping
     public String catalog(Model model) {
         List<ClassSession> all = sessionService.listAllSessions();
@@ -57,10 +55,6 @@ public class ClassSessionController {
         return "catalog";
     }
 
-    /**
-     * Horarios semanales de una modalidad concreta.
-     * Evita el choque de rutas usando “/horarios”
-     */
     @GetMapping("/{name}/horarios")
     public String twoWeeksSchedule(
             @PathVariable String name,

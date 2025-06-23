@@ -17,19 +17,11 @@ public class DashboardController {
         this.classSessionService = classSessionService;
     }
 
-    /**
-     * Muestra el panel de usuario tras el login, con todas las clases disponibles.
-     * @param model     Modelo para Thymeleaf
-     * @param principal Información del usuario autenticado
-     * @return "dashboard" (templates/dashboard.html)
-     */
     @GetMapping("/dashboard")
     public String dashboard(Model model, Principal principal) {
-        // Nombre del usuario autenticado
         String username = principal.getName();
         model.addAttribute("username", username);
 
-        // Lista de todas las clases disponibles
         List<ClassSession> classes = classSessionService.listAllSessions();
         model.addAttribute("classes", classes);
 

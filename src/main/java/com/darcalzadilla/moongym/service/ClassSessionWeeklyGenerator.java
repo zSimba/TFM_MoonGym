@@ -13,54 +13,83 @@ import java.util.List;
 
 @Service
 public class ClassSessionWeeklyGenerator {
-    private final IClassSessionRepository repo;
 
+    private final IClassSessionRepository repo;
     public ClassSessionWeeklyGenerator(IClassSessionRepository repo) {
         this.repo = repo;
     }
 
+    private static final List<DayOfWeek> WEEK_DAYS = List.of(
+            DayOfWeek.MONDAY,
+            DayOfWeek.TUESDAY,
+            DayOfWeek.WEDNESDAY,
+            DayOfWeek.THURSDAY,
+            DayOfWeek.FRIDAY
+    );
+
     public void generateTwoWeeksSessionsFor(String className) {
-        LocalDate today = LocalDate.now();
-        LocalDate currentMonday = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
-        LocalDate nextMonday    = currentMonday.plusWeeks(1);
-
-        // 1) Obtén TODAS las plantillas recurrentes de esa clase
         List<ClassSession> templates = repo.findByName(className);
+        if (templates.isEmpty()) return;
 
-        // 2) Para cada semana (actual y siguiente)…
-        for (LocalDate baseMonday : List.of(currentMonday, nextMonday)) {
-            LocalDateTime now = LocalDateTime.now();
+        LocalDate currentMonday = findCurrentMonday();
+        List<LocalDate> baseMondays = List.of(currentMonday, currentMonday.plusWeeks(1));
+        LocalDateTime now = LocalDateTime.now();
 
-            for (ClassSession tmpl : templates) {
-                LocalTime templateTime = tmpl.getDateTime().toLocalTime();
+        baseMondays.forEach(baseMonday ->
+                generateWeekSessionsFor(baseMonday, templates, className, now)
+        );
+    }
 
-                // 3) Genera L–V
-                for (DayOfWeek day : List.of(
-                        DayOfWeek.MONDAY,
-                        DayOfWeek.TUESDAY,
-                        DayOfWeek.WEDNESDAY,
-                        DayOfWeek.THURSDAY,
-                        DayOfWeek.FRIDAY)) {
+    private LocalDate findCurrentMonday() {
+        return LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+    }
 
-                    LocalDate sessionDate = baseMonday.with(TemporalAdjusters.nextOrSame(day));
-                    LocalDateTime sessionDt = LocalDateTime.of(sessionDate, templateTime);
-
-                    // 4) Sólo futuros y no duplicados
-                    if (sessionDt.isAfter(now)
-                            && !repo.existsByNameAndDateTime(className, sessionDt)) {
-
-                        ClassSession copy = new ClassSession();
-                        copy.setName(tmpl.getName());
-                        copy.setDescription(tmpl.getDescription());
-                        copy.setCapacity(tmpl.getCapacity());
-                        copy.setImageUrl(tmpl.getImageUrl());
-                        copy.setIntensityLevel(tmpl.getIntensityLevel());
-                        copy.setDateTime(sessionDt);
-                        copy.setRecurringWeekdays(true);
-                        repo.save(copy);
-                    }
+    private void generateWeekSessionsFor(
+            LocalDate baseMonday,
+            List<ClassSession> templates,
+            String className,
+            LocalDateTime now
+    ) {
+        for (ClassSession template : templates) {
+            LocalTime templateTime = template.getDateTime().toLocalTime();
+            for (DayOfWeek day : WEEK_DAYS) {
+                LocalDateTime sessionDateTime = buildSessionDateTime(baseMonday, day, templateTime);
+                if (shouldCreateSession(className, sessionDateTime, now)) {
+                    saveSessionFromTemplate(template, sessionDateTime);
                 }
             }
         }
+    }
+
+    private LocalDateTime buildSessionDateTime(
+            LocalDate baseMonday,
+            DayOfWeek day,
+            LocalTime time
+    ) {
+        LocalDate date = baseMonday.with(TemporalAdjusters.nextOrSame(day));
+        return LocalDateTime.of(date, time);
+    }
+
+    private boolean shouldCreateSession(
+            String className,
+            LocalDateTime sessionDateTime,
+            LocalDateTime now
+    ) {
+        return sessionDateTime.isAfter(now)
+                && !repo.existsByNameAndDateTime(className, sessionDateTime);
+    }
+
+    private void saveSessionFromTemplate(
+            ClassSession template,
+            LocalDateTime sessionDateTime
+    ) {
+        ClassSession copy = new ClassSession();
+        copy.setName(template.getName());
+        copy.setDescription(template.getDescription());
+        copy.setCapacity(template.getCapacity());
+        copy.setImageUrl(template.getImageUrl());
+        copy.setIntensityLevel(template.getIntensityLevel());
+        copy.setDateTime(sessionDateTime);
+        repo.save(copy);
     }
 }

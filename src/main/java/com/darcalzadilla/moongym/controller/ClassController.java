@@ -17,36 +17,28 @@ public class ClassController {
         this.classSessionService = classSessionService;
     }
 
-    /**
-     * Lista todas las sesiones de clase.
-     */
+
     @GetMapping
     public String listClasses(Model model) {
         model.addAttribute("sessions", classSessionService.listAllSessions());
         return "admin/class_list";
     }
 
-    /**
-     * Muestra el formulario para crear una nueva sesión.
-     */
+
     @GetMapping("/new")
     public String showCreateForm(Model model) {
         model.addAttribute("classSession", new ClassSession());
         return "admin/class_form";
     }
 
-    /**
-     * Procesa la creación de una nueva sesión.
-     */
+
     @PostMapping
     public String createClass(@ModelAttribute("classSession") ClassSession classSession) {
         classSessionService.createSession(classSession);
         return "redirect:/admin/classes";
     }
 
-    /**
-     * Muestra el formulario para editar una sesión existente.
-     */
+
     @GetMapping("/{id}/edit")
     public String showEditForm(@PathVariable Long id, Model model) {
         ClassSession session = classSessionService.getSessionById(id);
@@ -54,9 +46,7 @@ public class ClassController {
         return "admin/class_form";
     }
 
-    /**
-     * Procesa la actualización de una sesión.
-     */
+
     @PostMapping("/{id}")
     public String updateClass(@PathVariable Long id,
                               @ModelAttribute("classSession") ClassSession classSession) {
@@ -65,9 +55,7 @@ public class ClassController {
         return "redirect:/admin/classes";
     }
 
-    /**
-     * Elimina una sesión de clase.
-     */
+
     @PostMapping("/{id}/delete")
     public String deleteClass(@PathVariable Long id) {
         classSessionService.deleteSession(id);

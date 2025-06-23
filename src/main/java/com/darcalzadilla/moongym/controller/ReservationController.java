@@ -3,7 +3,6 @@ package com.darcalzadilla.moongym.controller;
 import com.darcalzadilla.moongym.entity.ClassSession;
 import com.darcalzadilla.moongym.entity.Reservation;
 import com.darcalzadilla.moongym.service.ClassSessionService;
-import com.darcalzadilla.moongym.service.ClassSessionServiceImpl;
 import com.darcalzadilla.moongym.service.IReservationService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,30 +24,23 @@ public class ReservationController {
         this.sessionService = sessionService;
     }
 
-    /**
-     *  Procesar reserva
-     */
     @GetMapping("/new")
     public String showBookForm(@RequestParam("classId") Long classId,
                                Model model) {
-        ClassSession session = sessionService.findById(classId)
+        ClassSession cs = sessionService.findById(classId)
                 .orElseThrow(() -> new NoSuchElementException("Sesión no encontrada: " + classId));
-        model.addAttribute("session", session);
+        model.addAttribute("classSession", cs);
         return "book_form";
     }
-    @PostMapping("/new")
-    public String bookSession(@RequestParam("classId") Long classId,
+    @PostMapping("/book")
+    public String bookSession(@RequestParam("sessionId") Long sessionId,
                               Principal principal,
                               Model model) {
-        Reservation reservation = reservationService
-                .bookSession(classId, principal.getName());
+        Reservation reservation = reservationService.bookSession(sessionId, principal.getName());
         model.addAttribute("reservation", reservation);
         return "reservation_success";
     }
 
-    /**
-     * Listar las reservas del usuario
-     */
     @GetMapping
     public String listMyReservations(Model model, Principal principal) {
         List<Reservation> reservations = reservationService.findByUser(principal.getName());
@@ -56,10 +48,7 @@ public class ReservationController {
         return "my_reservations";
     }
 
-    /**
-     * Cancelar una reserva concreta
-     */
-    @PostMapping("/reservas/{id}/cancel")
+    @PostMapping("/{id}/cancel")
     public String cancelReservation(@PathVariable("id") Long reservationId,
                                     Principal principal) {
         reservationService.cancelReservation(reservationId, principal.getName());

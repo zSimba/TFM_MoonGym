@@ -23,9 +23,4 @@ public class UserServiceImpl implements IUserService{
         return userRepo.save(user);
     }
 
-    @Override
-    public User findByUsername(String username) {
-        return userRepo.findByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado: " + username));
-    }
 }

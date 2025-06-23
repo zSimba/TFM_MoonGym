@@ -3,124 +3,125 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout}">
 <head>
-  <title layout:fragment="title">Horarios – Moon Gym</title>
+    <title layout:fragment="title">Horarios – Moon Gym</title>
 </head>
 <body>
 
 <section layout:fragment="content" class="container py-5">
 
-  <!-- CSS específico para el ribbon y escala de grises -->
-  <style>
-    .card-img-wrapper { position: relative; }
-    .ribbon {
-      width: 100px; height: 100px; overflow: hidden;
-      position: absolute; top: -10px; right: -10px;
-    }
-    .ribbon span {
-      position: absolute; display: block;
-      width: 140px; padding: 5px 0;
-      background: rgba(0,0,0,0.8); color: white;
-      text-align: center; transform: rotate(45deg);
-      top: 25px; right: -40px;
-      font-size: 0.75rem;
-    }
-    .grayscale img { filter: grayscale(100%); }
-  </style>
+    <style>
+        .card-img-wrapper {
+            position: relative;
+        }
 
-  <h1 class="mb-4">
-    Reservar “<span th:text="${className}">Clase</span>”
-  </h1>
+        .ribbon {
+            width: 100px;
+            height: 100px;
+            overflow: hidden;
+            position: absolute;
+            top: -10px;
+            right: -10px;
+        }
 
-  <!-- Iteramos cada fecha desde hoy hasta el viernes de la semana -->
-  <div th:each="date : ${dates}">
-    <!-- Cabecera: día de la semana + fecha -->
-    <h2 class="h4 mt-5 mb-3"
-        th:text="${#temporals.format(date, 'EEEE dd/MM/yyyy', #locale)}">
-      Lunes 23/06/2025
-    </h2>
+        .ribbon span {
+            position: absolute;
+            display: block;
+            width: 140px;
+            padding: 5px 0;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            text-align: center;
+            transform: rotate(45deg);
+            top: 25px;
+            right: -40px;
+            font-size: 0.75rem;
+        }
 
-    <div class="row g-3" th:with="sessions=${sessionsByDate.get(date)}">
+        .grayscale img {
+            filter: grayscale(100%);
+        }
+    </style>
 
-      <!-- Si no hay sesiones ese día -->
-      <div class="col-12" th:if="${#lists.isEmpty(sessions)}">
-        <p class="text-muted fst-italic">No hay sesiones este día.</p>
-      </div>
+    <h1 class="mb-4">
+        Reservar “<span th:text="${className}">Clase</span>”
+    </h1>
 
-      <!-- Tarjetas de sesión -->
-      <div class="col-sm-4" th:each="cs : ${sessions}">
-        <div class="card h-100 shadow-sm">
+    <div th:each="date : ${dates}">
+        <h2 class="h4 mt-5 mb-3"
+            th:text="${#temporals.format(date, 'EEEE dd/MM/yyyy', #locale)}">
+            Lunes 23/06/2025
+        </h2>
 
-          <!-- Imagen con posible escala de grises y ribbon -->
-          <div class="card-img-wrapper"
-               th:classappend="${cs.dateTime.isBefore(T(java.time.LocalDateTime).now())
+        <div class="row g-3" th:with="sessions=${sessionsByDate.get(date)}">
+
+            <div class="col-12" th:if="${#lists.isEmpty(sessions)}">
+                <p class="text-muted fst-italic">No hay sesiones este día.</p>
+            </div>
+
+            <div class="col-sm-4" th:each="cs : ${sessions}">
+                <div class="card h-100 shadow-sm">
+
+                    <div class="card-img-wrapper"
+                         th:classappend="${cs.dateTime.isBefore(T(java.time.LocalDateTime).now())
                                 or (#lists.size(cs.reservations) >= cs.capacity)}
                                ? ' grayscale' : ''">
 
-            <img th:src="${cs.imageUrl}"
-                 class="card-img-top"
-                 alt="Imagen clase">
+                        <img th:src="${cs.imageUrl}"
+                             class="card-img-top"
+                             alt="Imagen clase">
 
-            <!-- Sesión ya finalizada -->
-            <div class="ribbon"
-                 th:if="${cs.dateTime.isBefore(T(java.time.LocalDateTime).now())}">
-              <span>Finalizada</span>
-            </div>
-            <!-- Sesión completa y futura -->
-            <div class="ribbon"
-                 th:if="${#lists.size(cs.reservations) >= cs.capacity
+                        <div class="ribbon"
+                             th:if="${cs.dateTime.isBefore(T(java.time.LocalDateTime).now())}">
+                            <span>Finalizada</span>
+                        </div>
+                        <div class="ribbon"
+                             th:if="${#lists.size(cs.reservations) >= cs.capacity
                           and cs.dateTime.isAfter(T(java.time.LocalDateTime).now())}">
-              <span>Completa</span>
-            </div>
-          </div>
+                            <span>Completa</span>
+                        </div>
+                    </div>
 
-          <div class="card-body d-flex flex-column">
-            <!-- Nombre -->
-            <h5 class="card-title" th:text="${cs.name}">Nombre Clase</h5>
-            <!-- Fecha y hora -->
-            <p class="text-muted mb-2"
-               th:text="${#temporals.format(cs.dateTime,'dd/MM/yyyy HH:mm')}">
-              23/06/2025 10:00
-            </p>
-            <!-- Descripción -->
-            <p class="card-text mb-3" th:text="${cs.description}">
-              Descripción…
-            </p>
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title" th:text="${cs.name}">Nombre Clase</h5>
+                        <p class="text-muted mb-2"
+                           th:text="${#temporals.format(cs.dateTime,'dd/MM/yyyy HH:mm')}">
+                            23/06/2025 10:00
+                        </p>
+                        <p class="card-text mb-3" th:text="${cs.description}">
+                            Descripción…
+                        </p>
 
-            <!-- Estado y botón o contador -->
-            <div class="mt-auto d-flex align-items-center">
-              <!-- Si finalizada -->
+                        <div class="mt-auto d-flex align-items-center">
               <span th:if="${cs.dateTime.isBefore(T(java.time.LocalDateTime).now())}"
                     class="badge bg-secondary">
                 Clase Finalizada
               </span>
-              <!-- Si completa y futura -->
-              <span th:if="${#lists.size(cs.reservations) >= cs.capacity
+                            <span th:if="${#lists.size(cs.reservations) >= cs.capacity
                             and cs.dateTime.isAfter(T(java.time.LocalDateTime).now())}"
-                    class="badge bg-danger">
+                                  class="badge bg-danger">
                 Completa
               </span>
-              <!-- Si disponible -->
-              <span th:if="${!(cs.dateTime.isBefore(T(java.time.LocalDateTime).now()))
+                            <span th:if="${!(cs.dateTime.isBefore(T(java.time.LocalDateTime).now()))
                             and #lists.size(cs.reservations) < cs.capacity}"
-                    class="me-3">
+                                  class="me-3">
                 <strong th:text="${#lists.size(cs.reservations)} + '/' + ${cs.capacity}">
                   0/10
                 </strong>
               </span>
-              <a th:if="${!(cs.dateTime.isBefore(T(java.time.LocalDateTime).now()))
+                            <a th:if="${!(cs.dateTime.isBefore(T(java.time.LocalDateTime).now()))
                          and #lists.size(cs.reservations) < cs.capacity}"
-                 th:href="@{/reservas/new(classId=${cs.id})}"
-                 class="btn btn-primary btn-sm ms-auto">
-                Reservar
-              </a>
+                               th:href="@{/reservas/new(classId=${cs.id})}"
+                               class="btn btn-primary btn-sm ms-auto">
+                                Reservar
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
             </div>
 
-          </div>
         </div>
-      </div>
-
     </div>
-  </div>
 
 </section>
 
