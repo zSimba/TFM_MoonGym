@@ -231,7 +231,54 @@ footer a:hover {
     background: rgba(128, 0, 0, 0.8);
 }
 
-/* verde para reservadas */
 .ribbon.reservada span {
     background: rgba(0, 128, 0, 0.8);
 }
+body {
+    padding-top: 70px;
+}
+
+.hero {
+    position: relative;
+    height: 100vh;
+    background-image: url('/images/hero-bg.png');
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+.hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 0;
+}
+.hero-content {
+    position: relative;
+    z-index: 1;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 2rem 3rem;
+    border-radius: 0.5rem;
+}
+
+footer {
+    background: #f8f9fa;
+}
+
+.card-img-wrapper { position: relative; }
+.ribbon {
+    width: 100px; height: 100px; overflow: hidden;
+    position: absolute; top: -10px; right: -10px;
+}
+.ribbon span {
+    position: absolute; display: block;
+    width: 140px; padding: 5px 0;
+    background: rgba(0,0,0,0.8); color: white;
+    text-align: center; transform: rotate(45deg);
+    top: 25px; right: -40px;
+    font-size: 0.75rem;
+}
+.grayscale img { filter: grayscale(100%); }
