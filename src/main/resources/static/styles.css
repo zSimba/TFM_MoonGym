@@ -234,6 +234,7 @@ footer a:hover {
 .ribbon.reservada span {
     background: rgba(0, 128, 0, 0.8);
 }
+
 body {
     padding-top: 70px;
 }
@@ -249,6 +250,7 @@ body {
     justify-content: center;
     text-align: center;
 }
+
 .hero::before {
     content: "";
     position: absolute;
@@ -256,6 +258,7 @@ body {
     background-color: rgba(0, 0, 0, 0.5);
     z-index: 0;
 }
+
 .hero-content {
     position: relative;
     z-index: 1;
@@ -268,17 +271,45 @@ footer {
     background: #f8f9fa;
 }
 
-.card-img-wrapper { position: relative; }
-.ribbon {
-    width: 100px; height: 100px; overflow: hidden;
-    position: absolute; top: -10px; right: -10px;
+.card-img-wrapper {
+    position: relative;
 }
+
+.ribbon {
+    width: 100px;
+    height: 100px;
+    overflow: hidden;
+    position: absolute;
+    top: -10px;
+    right: -10px;
+}
+
 .ribbon span {
-    position: absolute; display: block;
-    width: 140px; padding: 5px 0;
-    background: rgba(0,0,0,0.8); color: white;
-    text-align: center; transform: rotate(45deg);
-    top: 25px; right: -40px;
+    position: absolute;
+    display: block;
+    width: 140px;
+    padding: 5px 0;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    text-align: center;
+    transform: rotate(45deg);
+    top: 25px;
+    right: -40px;
     font-size: 0.75rem;
 }
-.grayscale img { filter: grayscale(100%); }
+
+.grayscale img {
+    filter: grayscale(100%);
+}
+
+.card-img-wrapper {
+    position: relative;
+    overflow: hidden;
+}
+
+.card-img-wrapper img {
+    width: 100%;
+    aspect-ratio: 1/1;
+    object-fit: cover; 
+    display: block;
+}
