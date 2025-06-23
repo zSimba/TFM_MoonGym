@@ -4,12 +4,14 @@ import com.darcalzadilla.moongym.dto.ClassTypeDto;
 import com.darcalzadilla.moongym.entity.ClassSession;
 import com.darcalzadilla.moongym.service.ClassSessionService;
 import com.darcalzadilla.moongym.service.ClassSessionWeeklyGenerator;
+import com.darcalzadilla.moongym.service.IReservationService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.security.Principal;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -26,11 +28,13 @@ import java.util.stream.Collectors;
 public class ClassSessionController {
     private final ClassSessionService sessionService;
     private final ClassSessionWeeklyGenerator weeklyGenerator;
+    private final IReservationService reservationService;
 
     public ClassSessionController(ClassSessionService sessionService,
-                                  ClassSessionWeeklyGenerator weeklyGenerator) {
+                                  ClassSessionWeeklyGenerator weeklyGenerator, IReservationService reservationService) {
         this.sessionService = sessionService;
         this.weeklyGenerator = weeklyGenerator;
+        this.reservationService = reservationService;
     }
 
 
@@ -58,16 +62,18 @@ public class ClassSessionController {
     @GetMapping("/{name}/horarios")
     public String twoWeeksSchedule(
             @PathVariable String name,
-            Model model) {
-
+            Model model,
+            Principal principal
+    ) {
         weeklyGenerator.generateTwoWeeksSessionsFor(name);
 
-        LocalDate today = LocalDate.now();
+        LocalDate today  = LocalDate.now();
         LocalDate friday = today.with(TemporalAdjusters.nextOrSame(DayOfWeek.FRIDAY));
         LocalDateTime start = today.atStartOfDay();
         LocalDateTime end   = friday.atTime(LocalTime.MAX);
 
-        List<ClassSession> all = sessionService.findByNameAndDateRange(name, start, end);
+        List<ClassSession> all = sessionService
+                .findByNameAndDateRange(name, start, end);
 
         Map<LocalDate, List<ClassSession>> sessionsByDate = new TreeMap<>();
         for (LocalDate d = today; !d.isAfter(friday); d = d.plusDays(1)) {
@@ -78,9 +84,17 @@ public class ClassSessionController {
             sessionsByDate.get(d).add(s);
         });
 
-        model.addAttribute("className",     name);
+        List<Long> reservedIds = reservationService
+                .findByUser(principal.getName())
+                .stream()
+                .map(r -> r.getClassSession().getId())
+                .toList();
+
+        model.addAttribute("className",      name);
         model.addAttribute("sessionsByDate", sessionsByDate);
         model.addAttribute("dates",          sessionsByDate.keySet());
+        model.addAttribute("reservedIds",    reservedIds);
+
         return "schedules";
     }
 }
