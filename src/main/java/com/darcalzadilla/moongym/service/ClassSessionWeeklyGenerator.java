@@ -25,7 +25,7 @@ public class ClassSessionWeeklyGenerator {
         LocalDate nextMonday    = currentMonday.plusWeeks(1);
 
         // 1) Obtén TODAS las plantillas recurrentes de esa clase
-        List<ClassSession> templates = repo.findByNameAndRecurringWeekdaysTrue(className);
+        List<ClassSession> templates = repo.findByName(className);
 
         // 2) Para cada semana (actual y siguiente)…
         for (LocalDate baseMonday : List.of(currentMonday, nextMonday)) {

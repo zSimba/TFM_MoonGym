@@ -3,42 +3,56 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout}">
 <head>
-  <title layout:fragment="title">Confirmar Reserva</title>
+  <title layout:fragment="title">Confirmar Reserva – Moon Gym</title>
 </head>
 <body>
 <section layout:fragment="content" class="container py-5">
-  <h1 class="mb-4">Confirma tu Reserva</h1>
-  <div class="card mb-4 shadow-sm">
-    <img th:src="@{${session.imageUrl}}"
-         class="card-img-top" style="height:200px;object-fit:cover;"/>
-    <div class="card-body">
-      <h3 th:text="${session.name}">Rumba</h3>
-      <p th:text="${#temporals.format(session.dateTime,'EEEE dd/MM HH:mm')}">
-        Lunes 01/07 10:00
-      </p>
-      <p th:text="${session.description}">...</p>
-      <p>
-        <strong>Plazas libres:</strong>
-        <span th:text="${session.capacity
-               - (session.reservations != null ? session.reservations.size() : 0)}">
-              5
+
+  <h1 class="mb-4">Vas a reservar:</h1>
+
+  <div class="card mb-4">
+    <div class="row g-0">
+      <!-- Si quieres mostrar imagen: -->
+      <div class="col-md-4" th:if="${session.imageUrl}">
+        <img th:src="${session.imageUrl}"
+             class="img-fluid rounded-start"
+             alt="Imagen de la clase">
+      </div>
+      <div class="col-md-8">
+        <div class="card-body">
+          <p>
+            <strong>Fecha y hora:</strong>
+            <span th:text="${#temporals.format(session.dateTime,'EEEE dd MMMM yyyy HH:mm',#locale)}">
+              Lunes 23 junio 2025 10:00
             </span>
-      </p>
+          </p>
+          <p>
+            <strong>Descripción:</strong>
+            <span th:text="${session.description}">Rodaremos al ritmo de la música…</span>
+          </p>
+          <p>
+            <strong>Capacidad:</strong>
+            <span th:text="${
+                (session.reservations != null ? session.reservations.size() : 0)
+                + ' / ' + session.capacity
+            }">0 / 10</span>
+          </p>
+        </div>
+      </div>
     </div>
   </div>
+
   <form th:action="@{/reservas/book}" method="post">
-    <input type="hidden" name="sessionId"
-           th:value="${session.id}" />
-    <div class="form-check mb-3">
-      <input class="form-check-input" type="checkbox"
-             id="terms" name="acceptTerms" required/>
-      <label class="form-check-label" for="terms">
-        Acepto los términos y condiciones
-      </label>
-    </div>
-    <button class="btn btn-success">Confirmar Reserva</button>
-    <a th:href="@{/clases}" class="btn btn-secondary ms-2">Volver</a>
+    <input type="hidden" name="sessionId" th:value="${session.id}"/>
+
+    <button type="submit" class="btn btn-primary">
+      Confirmar Reserva
+    </button>
+    <a th:href="@{/clases}" class="btn btn-secondary ms-2">
+      Volver
+    </a>
   </form>
+
 </section>
 </body>
 </html>

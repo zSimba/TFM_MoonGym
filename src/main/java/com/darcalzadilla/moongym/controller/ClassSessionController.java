@@ -9,14 +9,16 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.TemporalAdjusters;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 @Controller
@@ -66,53 +68,25 @@ public class ClassSessionController {
 
         weeklyGenerator.generateTwoWeeksSessionsFor(name);
 
-        LocalDate currentMonday = LocalDate.now()
-                .with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
-        LocalDateTime start = currentMonday.atStartOfDay();
-        LocalDateTime end   = currentMonday.plusWeeks(1)
-                .plusDays(4).atTime(LocalTime.MAX);
+        LocalDate today = LocalDate.now();
+        LocalDate friday = today.with(TemporalAdjusters.nextOrSame(DayOfWeek.FRIDAY));
+        LocalDateTime start = today.atStartOfDay();
+        LocalDateTime end   = friday.atTime(LocalTime.MAX);
 
-        List<ClassSession> sessions = sessionService
-                .findByNameAndDateRange(name, start, end);
+        List<ClassSession> all = sessionService.findByNameAndDateRange(name, start, end);
 
-        Map<DayOfWeek, List<ClassSession>> sessionsByDay = sessions.stream()
-                .collect(Collectors.groupingBy(
-                        s -> s.getDateTime().getDayOfWeek(),
-                        () -> new EnumMap<>(DayOfWeek.class),
-                        Collectors.toList()
-                ));
-
-        model.addAttribute("className",      name);
-        model.addAttribute("sessionsByDay",  sessionsByDay);
-        // lista fija Mon–Fri en orden
-        model.addAttribute("days", List.of(
-                DayOfWeek.MONDAY,
-                DayOfWeek.TUESDAY,
-                DayOfWeek.WEDNESDAY,
-                DayOfWeek.THURSDAY,
-                DayOfWeek.FRIDAY));
-
-        return "schedules";
-    }
-
-    /** Formulario de reserva */
-    @GetMapping("/book")
-    public String bookForm(@RequestParam("sessionId") Long sessionId,
-                           Model model) {
-        ClassSession session = sessionService.findById(sessionId)
-                .orElseThrow(() -> new NoSuchElementException("Sesión no encontrada: " + sessionId));
-        model.addAttribute("session", session);
-        return "book_form";
-    }
-
-    /**
-     * Inicializa un EnumMap con todas las claves MONDAY..SUNDAY apuntando a listas vacías
-     */
-    private Map<DayOfWeek, List<ClassSession>> initEmptyWeek() {
-        Map<DayOfWeek, List<ClassSession>> map = new EnumMap<>(DayOfWeek.class);
-        for (DayOfWeek d : DayOfWeek.values()) {
-            map.put(d, new ArrayList<>());
+        Map<LocalDate, List<ClassSession>> sessionsByDate = new TreeMap<>();
+        for (LocalDate d = today; !d.isAfter(friday); d = d.plusDays(1)) {
+            sessionsByDate.put(d, new ArrayList<>());
         }
-        return map;
+        all.forEach(s -> {
+            LocalDate d = s.getDateTime().toLocalDate();
+            sessionsByDate.get(d).add(s);
+        });
+
+        model.addAttribute("className",     name);
+        model.addAttribute("sessionsByDate", sessionsByDate);
+        model.addAttribute("dates",          sessionsByDate.keySet());
+        return "schedules";
     }
 }
