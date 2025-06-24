@@ -69,7 +69,7 @@ public class ReservationServiceImpl implements IReservationService{
     }
     @Override
     public List<Reservation> findByUser(String name) {
-        return reservationRepo.findAll();
+        return reservationRepo.findByUserUsername(name);
     }
 
 }

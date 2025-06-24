@@ -11,5 +11,5 @@ import java.util.List;
 @Repository
 public interface IReservationRepository extends JpaRepository<Reservation, Long> {
     boolean existsByUserAndClassSession(User user, ClassSession classSession);
-    List<Reservation> findByUser(User user);
+    List<Reservation> findByUserUsername(String username);
 }
