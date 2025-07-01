@@ -112,7 +112,6 @@ public class ClassSession {
     public void setReservations(List<Reservation> reservations) {
         this.reservations = reservations;
     }
-    /** Plazas disponibles */
     @Transient
     public int getAvailableSeats() {
         return capacity - reservations.size();

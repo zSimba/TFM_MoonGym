@@ -13,16 +13,9 @@ import java.util.List;
 public interface IClassSessionRepository extends JpaRepository<ClassSession, Long> {
 
     List<ClassSession> findTop3ByOrderByDateTimeAsc();
-
-    List<ClassSession> findByDateTimeBetween(LocalDateTime start, LocalDateTime end);
-
-    List<ClassSession> findByRecurringWeekdaysTrueAndDateTimeBefore(LocalDateTime localDateTime);
-
     boolean existsByNameAndDateTime(String name, LocalDateTime newDateTime);
-
     @Query("SELECT DISTINCT cs.name FROM ClassSession cs")
     List<String> findDistinctNames();
-
     List<ClassSession> findByNameAndDateTimeBetween(String name, LocalDateTime from, LocalDateTime to);
 
     @Query("""
@@ -41,7 +34,6 @@ public interface IClassSessionRepository extends JpaRepository<ClassSession, Lon
 
     List<ClassSession> findByName(String className);
 
-    List<ClassSession> findByNameAndRecurringWeekdaysTrue(String className);
 
 
 }

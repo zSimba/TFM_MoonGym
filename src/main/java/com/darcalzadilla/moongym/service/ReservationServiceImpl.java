@@ -43,7 +43,6 @@ public class ReservationServiceImpl implements IReservationService{
             throw new IllegalStateException("No hay plazas disponibles");
         }
 
-        // 3) Crear la reserva
         Reservation res = new Reservation();
         res.setUser(user);
         res.setClassSession(session);
@@ -61,7 +60,6 @@ public class ReservationServiceImpl implements IReservationService{
         if (!res.getUser().getUsername().equals(username)) {
             throw new IllegalArgumentException("No tienes permiso para cancelar esta reserva");
         }
-        // Eliminar de la sesión
         ClassSession session = res.getClassSession();
         session.getReservations().remove(res);
 
